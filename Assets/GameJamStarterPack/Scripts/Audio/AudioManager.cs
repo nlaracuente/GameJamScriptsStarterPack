@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.GameJamStarterPack.Scripts.Audio
@@ -10,11 +6,41 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
     [RequireComponent(typeof(AudioSource))]
     public class AudioManager : Singleton<AudioManager>
     {
-        [SerializeField, Tooltip("Plays music only when enabled")]
+        [SerializeField, Tooltip("Enables/Disables the playing on music by default")]
         bool m_musicEnabled = true;
 
-        [SerializeField, Tooltip("Plays music only when enabled")]
+        /// <summary>
+        /// Turns the music aduio source ON/OFF 
+        /// </summary>
+        public bool MusicEnabled
+        {
+            get { return m_musicEnabled; }
+            set {
+                m_musicEnabled = value;
+                MusicAudioSource.enabled = value;
+            }
+        }
+
+        [SerializeField, Tooltip("Enables/Disables the playing on sound fxs by default")]
         bool m_fxEnabled = true;
+
+        /// <summary>
+        /// Turns the playing of sounds effects ON/OFF  
+        /// When OFF, all currently playing sounds will be stopped
+        /// </summary>
+        public bool FxsEnabled
+        {
+            get { return m_fxEnabled; }
+
+            set {
+                m_fxEnabled = value;
+                m_fxSources.ForEach(source => {
+                    if(source != null && !value) {
+                        source.Stop();
+                    }
+                });
+            }
+        }
 
         [SerializeField, Range(0f, 1f), Tooltip("Master music volume level")]
         float m_musicVolume = 1f;
@@ -50,9 +76,9 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
 
                     // Only play when the previous sample clip is done playing
                     if (m_sampleFxClip == null || !m_sampleFxClip.IsPlaying) {
-                        GameObject clipGO = new GameObject("SampleFxClip", typeof(SingleShot2DAudio));
-                        m_sampleFxClip = clipGO.GetComponent<SingleShot2DAudio>();
-                        m_sampleFxClip.PlaySound(m_fxSampleClip, m_fxVolume);
+                        GameObject clipGO = new GameObject("SampleFxClip", typeof(SingleShotAudio));
+                        m_sampleFxClip = clipGO.GetComponent<SingleShotAudio>();
+                        m_sampleFxClip.Play2DSound(m_fxSampleClip, m_fxVolume);
                     }
                 }
             }
@@ -62,7 +88,7 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// Current game music clip
         /// </summary>
         [SerializeField, Tooltip("Music to play when the AudioManager is loaded")]
-        AudioClip m_musicClip;
+        AudioClip m_musicClip; 
 
         /// <summary>
         /// A reference to the attached audio source for playing music
@@ -95,7 +121,67 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// A reference to the current fx sample clip playing
         /// This is to ensure we don't playing it too many times
         /// </summary>
-        SingleShot2DAudio m_sampleFxClip;
+        SingleShotAudio m_sampleFxClip;
 
+        /// <summary>
+        /// A collection of AudioSources of all currently playing audio clips
+        /// </summary>
+        List<AudioSource> m_fxSources = new List<AudioSource>();
+
+        /// <summary>
+        /// Plays the given clip as 2D sound which means it will be heard equally from all speakers
+        /// </summary>
+        /// <param name="clip"></param>
+        /// <param name="volume"></param>
+        /// <returns></returns>
+        public AudioSource Play2DSound(AudioClip clip, float volume = 1f)
+        {
+            SingleShotAudio fx = CreateNewFxSource();
+            fx.Play2DSound(clip, Mathf.Clamp01(volume * FxVolume));
+            return fx.Source;
+        }
+
+        /// <summary>
+        /// Plays the given clip as a 3D sound by making the sound originate from the given position
+        /// </summary>
+        /// <param name="clip"></param>
+        /// <param name="position"></param>
+        /// <param name="volume"></param>
+        /// <returns></returns>
+        public AudioSource PlaySoundAt(AudioClip clip, Vector3 position, float volume = 1f)
+        {
+            SingleShotAudio fx = CreateNewFxSource();
+            fx.PlaySoundAt(clip, position, Mathf.Clamp01(volume * FxVolume));
+            return fx.Source;
+        }
+
+        /// <summary>
+        /// Returns a new instance of a SingleShotAudio
+        /// AudioSources created are stored in <see cref="m_fxSources"/>
+        /// </summary>
+        /// <returns></returns>
+        SingleShotAudio CreateNewFxSource()
+        {
+            SingleShotAudio audio = new GameObject("SingleShotAudio", typeof(SingleShotAudio)).GetComponent<SingleShotAudio>();
+            
+            // Keeps the hierarchy a little cleaner by putting all spawned audio under the manager
+            audio.gameObject.transform.SetParent(transform);
+
+            m_fxSources.Add(audio.Source);            
+            return audio;
+        }
+
+        /// <summary>
+        /// Triggers the music to play or pause 
+        /// </summary>
+        /// <param name="play"></param>
+        void ToggleMusic(bool play)
+        {
+            if (!play && MusicAudioSource.isPlaying) {
+                MusicAudioSource.Pause();
+            } else if (play && !MusicAudioSource.isPlaying) {
+                MusicAudioSource.Play();
+            }
+        }
     }
 }

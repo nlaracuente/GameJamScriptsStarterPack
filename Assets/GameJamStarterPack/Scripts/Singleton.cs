@@ -20,13 +20,14 @@ namespace Assets.GameJamStarterPack.Scripts
         bool m_isPersistent = false;
 
         /// <summary>
-        /// Returns the instance of this object
-        /// In the case this is not a persistent object we will try to find an existing instance
+        /// The current instance if one exists or creates a new one 
         /// </summary>
         public static T Instance
         {
             get {
                 m_instance = m_instance ?? FindObjectOfType<T>();
+                
+                // Create
                 if (m_instance == null) {
                     m_instance = new GameObject(nameof(T), typeof(T)) as T;
                 }
