@@ -1,9 +1,4 @@
 ﻿using Assets.GameJamStarterPack.Scripts.Audio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.GameJamStarterPack.Scripts.Examples
@@ -18,6 +13,12 @@ namespace Assets.GameJamStarterPack.Scripts.Examples
             // Play sound on Left Mouse Button down
             if (Input.GetMouseButtonDown(0)) {
                 AudioManager.Instance.Play2DSound(AudioClipName.Shoot);
+            }
+
+            // Play 3D sound on Right Mouse Button down
+            if (Input.GetMouseButtonDown(1)) {
+                Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                AudioManager.Instance.PlaySoundAt(AudioClipName.Die, position);
             }
         }
     }
