@@ -52,32 +52,36 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// Plays the given clip positioning the audio source at the give position
         /// so that the sound originates from that position
         /// </summary>
-        /// <param name="clip"></param>
-        /// <param name="volume"></param>
-        public void PlaySoundAt(AudioClip clip, Vector3 position, float volume = 1f)
+        /// <param name="clip">Clip to play</param>
+        /// <param name="position">World position to originate sound from</param>
+        /// <param name="volume">Volume to play at</param>
+        /// <param name="loops">Loop sound playback</param>
+        public void PlaySoundAt(AudioClip clip, Vector3 position, float volume = 1f, bool loops = false)
         {
             transform.position = position;
-            PlaySound(clip, volume);
+            PlaySound(clip, volume, 1f, loops);
         }
 
         /// <summary>
         /// Plays the given clip with a spatial blend of 0 making it be fully 2D
         /// </summary>
-        /// <param name="clip"></param>
-        /// <param name="volume"></param>
-        public void Play2DSound(AudioClip clip, float volume = 1f)
+        /// <param name="clip">Clip to play</param>
+        /// <param name="volume">Volume to play at</param>
+        /// <param name="loops">Loop sound playback</param>
+        public void Play2DSound(AudioClip clip, float volume = 1f, bool loops = false)
         {
-            PlaySound(clip, volume, 0f);
+            PlaySound(clip, volume, 0f, loops);
         }
 
         /// <summary>
         /// Setups the audio source to play the given sound at the given volume/spatial blend 
         /// A spatial blen higher than 0 makes the sound 3D with the highest value being 1
         /// </summary>
-        /// <param name="clip"></param>
-        /// <param name="volume"></param>
-        /// <param name="spatialBlend"></param>
-        void PlaySound(AudioClip clip, float volume = 1f, float spatialBlend = 1f)
+        /// <param name="clip">Clip to play</param>        
+        /// <param name="volume">Volume to play at</param>
+        /// <param name="spatialBlend">1f = 3D, 0f = 2D</param>
+        /// <param name="loops">Loop sound playback</param>
+        void PlaySound(AudioClip clip, float volume = 1f, float spatialBlend = 1f, bool loops = false)
         {
             if (clip == null) {
                 Destroy(gameObject);
@@ -91,7 +95,7 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
 
             Source.volume = Mathf.Clamp01(volume);
             Source.clip = clip;
-            Source.loop = false;
+            Source.loop = loops;
             Source.spatialBlend = Mathf.Clamp01(spatialBlend);
             Source.Play();
         }

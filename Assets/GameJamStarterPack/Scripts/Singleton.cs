@@ -14,10 +14,15 @@ namespace Assets.GameJamStarterPack.Scripts
         static T m_instance;
 
         /// <summary>
-        /// True: prevents the object from being destroyed
+        /// True: prevents the object from being destroyed.
+        /// <note>
+        /// Singletons can be auto-instantiated therefore if you want to keep the persistent key
+        /// then you must set it within the child class by overriding this flag.
+        /// If you setup the class as a prefab then the option is available in the inspector
+        /// </note> 
         /// </summary>
         [SerializeField, Tooltip("Enable this to prevent the object from being destroyed")]
-        bool m_isPersistent = false;
+        protected bool m_isPersistent = false;
 
         /// <summary>
         /// The current instance if one exists or creates a new one 
@@ -29,7 +34,10 @@ namespace Assets.GameJamStarterPack.Scripts
                 
                 // Create
                 if (m_instance == null) {
-                    m_instance = new GameObject(nameof(T), typeof(T)) as T;
+                    GameObject go = new GameObject(typeof(T).Name, typeof(T));
+                    m_instance = go.GetComponent<T>();
+                    Debug.LogWarning($"No instance of {typeof(T).Name} was found. A new instance was spawned.\n" +
+                                     $"If this is not the desired behavior please ensure to add the instance to the hierachy in the inspector");
                 }
 
                 return m_instance;
