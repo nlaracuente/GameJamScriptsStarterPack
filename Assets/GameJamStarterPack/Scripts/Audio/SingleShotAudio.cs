@@ -62,6 +62,13 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
             PlaySound(clip, volume, 1f, loops);
         }
 
+        public void PlaySoundAt(AudioClip clip, Vector3 position, Sound3DSettings settings)
+        {
+            transform.position = position;
+            PlaySound(clip, settings.Volume, 1f, settings.Loops);
+
+        }
+
         /// <summary>
         /// Plays the given clip with a spatial blend of 0 making it be fully 2D
         /// </summary>
