@@ -242,6 +242,20 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
             return fx.Source;
         }
 
+
+        public AudioSource PlaySoundAt(AudioClipName clipName, Vector3 position, Sound3DSettings settings)
+        {
+            AudioClip clip = GetAudioClip(clipName);
+            SingleShotAudio fx = CreateNewSoundSource();
+
+            fx.PlaySoundAt(clip, position, Mathf.Clamp01(settings.Volume * SoundFxVolume), settings.Loops);
+            AudioSource source = fx.Source;
+
+            source.dopplerLevel = settings.DopplerLevel;
+
+            return source;
+        }
+
         /// <summary>
         /// Returns a new instance of a SingleShotAudio
         /// AudioSources created are stored in <see cref="m_soundFxSources"/>

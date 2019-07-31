@@ -6,8 +6,8 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
     /// </summary>
     public enum AudioClipName
     {
-        Walk,
-        Shoot,
-        Die,
+        Move,
+        Confirm,
+        Cancel,
     }
 }
