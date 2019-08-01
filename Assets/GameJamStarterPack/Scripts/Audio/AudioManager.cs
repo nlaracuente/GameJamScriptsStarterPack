@@ -83,6 +83,8 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
                     if (m_sampleSoundFxClip == null || !m_sampleSoundFxClip.IsPlaying) {
                         GameObject clipGO = new GameObject("SampleFxClip", typeof(SingleShotAudio));
                         m_sampleSoundFxClip = clipGO.GetComponent<SingleShotAudio>();
+
+
                         m_sampleSoundFxClip.Play2DSound(m_soundFxSampleClip, m_soundFxsVolume);
                     }
                 }
@@ -137,9 +139,9 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         List<AudioClipInfo> m_clipsLibrary = new List<AudioClipInfo>();
 
         /// <summary>
-        /// A maps audio clip names with the actual audio clip
+        /// A maps audio clip names with the clip info for easy access
         /// </summary>
-        Dictionary<AudioClipName, AudioClip> m_clipMapping;
+        Dictionary<AudioClipName, AudioClipInfo> m_clipMapping;
 
         /// <summary>
         /// Triggers contiguration after the manager is instantiated
@@ -157,7 +159,7 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// </summary>
         void Configure()
         {
-            m_clipMapping = m_clipsLibrary.GroupBy(c => c.Name).ToDictionary(k => k.Key, v => v.First().Clip);
+            m_clipMapping = m_clipsLibrary.GroupBy(c => c.Name).ToDictionary(k => k.Key, v => v.First());
             SetMusic(m_musicClip);
         }        
 
@@ -167,9 +169,8 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// <param name="clipName"></param>
         public void PlayMusic(AudioClipName clipName)
         {
-            AudioClip clip = GetAudioClip(clipName);
-            SetMusic(clip);
-            
+            AudioClip clip = GetClipInfo(clipName).Clip;
+            SetMusic(clip);            
         }
 
         /// <summary>
@@ -190,17 +191,17 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// </summary>
         /// <param name="clipName"></param>
         /// <returns></returns>
-        AudioClip GetAudioClip(AudioClipName clipName)
+        AudioClipInfo GetClipInfo(AudioClipName clipName)
         {
-            AudioClip clip = m_clipMapping.ContainsKey(clipName) ? m_clipMapping[clipName] : null;
+            AudioClipInfo info = m_clipMapping.ContainsKey(clipName) ? m_clipMapping[clipName] : null;
 
-            if (!m_clipMapping.ContainsKey(clipName)) {
+            if (info == null) {
                 Debug.LogError($"Clip: '{clipName.ToString()}' has not been assigned in the clips library");
-            } else if(clip == null) {
+            } else if(info.Clip == null) {
                 Debug.LogError($"'{clipName.ToString()}' has no AudioClip assigned to it");
             }
 
-            return clip;
+            return info;
         }
 
         /// <summary>
@@ -215,10 +216,10 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// <returns></returns>
         public AudioSource Play2DSound(AudioClipName clipName, float volume = 1f, bool loops = false)
         {
-            AudioClip clip = GetAudioClip(clipName);
+            AudioClip clip = GetClipInfo(clipName).Clip;
             SingleShotAudio fx = CreateNewSoundSource();
 
-            fx.Play2DSound(clip, Mathf.Clamp01(volume * SoundFxVolume), loops);
+            fx.Play2DSound(clip, Mathf.Clamp01(volume * SoundFxVolume));
             return fx.Source;
         }
 
@@ -230,28 +231,17 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// </summary>
         /// <param name="clipName"></param>
         /// <param name="position"></param>
-        /// <param name="volume"></param>
-        /// <param name="loops"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
-        public AudioSource PlaySoundAt(AudioClipName clipName, Vector3 position, float volume = 1f, bool loops = false)
+        public AudioSource PlaySoundAt(AudioClipName clipName, Vector3 position)
         {
-            AudioClip clip = GetAudioClip(clipName);
+            AudioClipInfo info = GetClipInfo(clipName);
+            AudioClip clip = info.Clip;
+            
             SingleShotAudio fx = CreateNewSoundSource();
 
-            fx.PlaySoundAt(clip, position, Mathf.Clamp01(volume * SoundFxVolume), loops);
-            return fx.Source;
-        }
-
-
-        public AudioSource PlaySoundAt(AudioClipName clipName, Vector3 position, Sound3DSettings settings)
-        {
-            AudioClip clip = GetAudioClip(clipName);
-            SingleShotAudio fx = CreateNewSoundSource();
-
-            fx.PlaySoundAt(clip, position, Mathf.Clamp01(settings.Volume * SoundFxVolume), settings.Loops);
+            fx.PlaySoundAt(clip, position, info.Settings);
             AudioSource source = fx.Source;
-
-            source.dopplerLevel = settings.DopplerLevel;
 
             return source;
         }

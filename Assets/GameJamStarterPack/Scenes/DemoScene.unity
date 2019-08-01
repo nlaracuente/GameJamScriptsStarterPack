@@ -414,10 +414,49 @@ MonoBehaviour:
   m_clipsLibrary:
   - m_clipName: 1
     m_audioClip: {fileID: 8300000, guid: dca3084cb66e8824bab682c584bec504, type: 3}
+    m_settings:
+      volume: 1
+      loops: 0
+      priority: 128
+      pitch: 1
+      stereoPan: 0
+      reverbZoneMix: 1
+      dopplerLevel: 1
+      spatialBlend: 0
+      spread: 0
+      minDistance: 1
+      maxDistance: 500
+      volumeRolloff: 0
   - m_clipName: 2
     m_audioClip: {fileID: 8300000, guid: 7e58c1718e011c847949792efd486a17, type: 3}
+    m_settings:
+      volume: 1
+      loops: 0
+      priority: 128
+      pitch: 1
+      stereoPan: 0
+      reverbZoneMix: 1
+      dopplerLevel: 1
+      spatialBlend: 0
+      spread: 0
+      minDistance: 1
+      maxDistance: 500
+      volumeRolloff: 0
   - m_clipName: 0
     m_audioClip: {fileID: 8300000, guid: 795c4ea2ea1ffc54982c652644a64520, type: 3}
+    m_settings:
+      volume: 1
+      loops: 0
+      priority: 128
+      pitch: 1
+      stereoPan: 0
+      reverbZoneMix: 1
+      dopplerLevel: 1
+      spatialBlend: 0
+      spread: 0
+      minDistance: 1
+      maxDistance: 500
+      volumeRolloff: 0
 --- !u!82 &628414977
 AudioSource:
   m_ObjectHideFlags: 0

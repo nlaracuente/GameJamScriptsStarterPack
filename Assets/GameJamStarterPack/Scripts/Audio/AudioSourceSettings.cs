@@ -30,8 +30,8 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// (Priority: 0 = most important. 256 = least important. Default = 128.)
         /// Use 0 for music tracks to avoid it getting occasionally swapped out
         /// </summary>
-        [Range(0f, 256f), Tooltip("Sound Priorty over other sounds.\n0 = most important. 256 = least important. Default = 128")]
-        public float priority = 128f;
+        [Range(0, 256), Tooltip("Sound Priorty over other sounds.\n0 = most important. 256 = least important. Default = 128")]
+        public int priority = 128;
 
         /// <summary>
         /// Amount of change in pitch due to slowdown/speed up of the Audio Clip. Value 1 is normal playback speed
@@ -59,6 +59,13 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// </summary>
         [Range(0f, 5f), Tooltip("How much doppler effect to apply. 0 = no effect")]
         public float dopplerLevel = 1f;
+
+        /// <summary>
+        /// Determines how much 2D effect the sound will play as.
+        /// When using custom custom rolloff this option is controlled by the curved
+        /// </summary>
+        [Range(0, 1f), Tooltip("Make the sound 2D, 3D, or a mixture. 0 = 2d, 1 = 3D")]
+        public float spatialBlend = 0;
 
         /// <summary>
         /// Sets the spread angle to 3D stereo or multichannel sound in speaker space.

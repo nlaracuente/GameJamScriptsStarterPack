@@ -49,35 +49,47 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         }
 
         /// <summary>
-        /// Plays the given clip positioning the audio source at the give position
-        /// so that the sound originates from that position
+        /// Plays the given clip at the given position by moving the AudioSource parent object to that location
         /// </summary>
-        /// <param name="clip">Clip to play</param>
-        /// <param name="position">World position to originate sound from</param>
-        /// <param name="volume">Volume to play at</param>
-        /// <param name="loops">Loop sound playback</param>
-        public void PlaySoundAt(AudioClip clip, Vector3 position, float volume = 1f, bool loops = false)
+        /// <param name="clip"></param>
+        /// <param name="position"></param>
+        /// <param name="settings"></param>
+        public void PlaySoundAt(AudioClip clip, Vector3 position, AudioSourceSettings settings)
         {
             transform.position = position;
-            PlaySound(clip, volume, 1f, loops);
-        }
-
-        public void PlaySoundAt(AudioClip clip, Vector3 position, Sound3DSettings settings)
-        {
-            transform.position = position;
-            PlaySound(clip, settings.Volume, 1f, settings.Loops);
+            PlaySound(clip, settings);
 
         }
 
         /// <summary>
-        /// Plays the given clip with a spatial blend of 0 making it be fully 2D
+        /// Forces the given clip to have a spatial blend of 0 to make it 2D
+        /// This overrides which ever values the given settings has
+        /// Note:
+        ///     You could set the settings to spatialBlend 0 by default and use the PlaySoundAt,
+        ///     be it will always play as 2D, but what this allows you to do is play any sound 
+        ///     as a 2D sound even if it was configured to be 3D
         /// </summary>
-        /// <param name="clip">Clip to play</param>
-        /// <param name="volume">Volume to play at</param>
-        /// <param name="loops">Loop sound playback</param>
-        public void Play2DSound(AudioClip clip, float volume = 1f, bool loops = false)
+        /// <param name="clip"></param>
+        /// <param name="settings"></param>
+        public void Play2DSound(AudioClip clip, AudioSourceSettings settings)
         {
-            PlaySound(clip, volume, 0f, loops);
+            PlaySound(clip, settings);
+        }
+
+        /// <summary>
+        /// Plays the given clip as a 2D sound with default audio settings
+        /// Use this when you need to quickly play a 2D sound without the need of custom settings
+        /// </summary>
+        /// <param name="clip"></param>
+        /// <param name="volume"></param>
+        /// <param name="pitch">change the pitch level</param>
+        public void Play2DSound(AudioClip clip, float volume, float pitch = 1f)
+        {
+            AudioSourceSettings settings = new AudioSourceSettings() {
+                volume = volume,
+                pitch = pitch
+            };
+            PlaySound(clip, settings);
         }
 
         /// <summary>
@@ -88,7 +100,7 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
         /// <param name="volume">Volume to play at</param>
         /// <param name="spatialBlend">1f = 3D, 0f = 2D</param>
         /// <param name="loops">Loop sound playback</param>
-        void PlaySound(AudioClip clip, float volume = 1f, float spatialBlend = 1f, bool loops = false)
+        void PlaySound(AudioClip clip, AudioSourceSettings settings)
         {
             if (clip == null) {
                 Destroy(gameObject);
@@ -100,10 +112,21 @@ namespace Assets.GameJamStarterPack.Scripts.Audio
             // Keeps the Hierarchy a little cleaner
             gameObject.name = clip.name + "_AudioSource";
 
-            Source.volume = Mathf.Clamp01(volume);
+            // Confiure the AudioSource
             Source.clip = clip;
-            Source.loop = loops;
-            Source.spatialBlend = Mathf.Clamp01(spatialBlend);
+            Source.volume = Mathf.Clamp01(settings.volume);            
+            Source.loop = settings.loops;
+            Source.priority = settings.priority;
+            Source.pitch = settings.pitch;
+            Source.panStereo = settings.stereoPan;
+            Source.reverbZoneMix = settings.reverbZoneMix;
+            Source.dopplerLevel = settings.dopplerLevel;
+            Source.spatialBlend = Mathf.Clamp01(settings.spatialBlend);
+            Source.spread = Mathf.Clamp(settings.spread, 0, 360);
+            Source.minDistance = settings.minDistance;
+            Source.maxDistance = settings.maxDistance;
+            Source.rolloffMode = settings.volumeRolloff;
+
             Source.Play();
         }
     }
