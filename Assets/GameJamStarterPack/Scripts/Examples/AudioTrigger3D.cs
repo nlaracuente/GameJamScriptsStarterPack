@@ -1,5 +1,4 @@
-﻿using Assets.GameJamStarterPack.Scripts.Audio;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// An example on how an object might request the AudioManager to play a sound that originates 

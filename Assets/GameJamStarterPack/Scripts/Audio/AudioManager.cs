@@ -185,7 +185,7 @@ public class AudioManager : Singleton<AudioManager>
     }
 
     /// <summary>
-    /// Returns the AudipClip assocaited with the given clip name
+    /// Returns the AudipClipInfo assocaited with the given clip name
     /// </summary>
     /// <param name="clipName"></param>
     /// <returns></returns>
@@ -208,16 +208,22 @@ public class AudioManager : Singleton<AudioManager>
     /// <see cref="PauseSounds"/> or <see cref="StopAll"/> are called 
     /// or when you stop it through the returned AudioSource
     /// </summary>
-    /// <param name="clipName"></param>
-    /// <param name="volume"></param>
-    /// <param name="loops"></param>
+    /// <param name="clipName">The name of the clip to play</param>
+    /// <param name="volume">Modify the default volume of the clip</param>
+    /// <param name="pitch">Modify the pitch of the sound</param>
     /// <returns></returns>
-    public AudioSource Play2DSound(AudioClipName clipName, float volume = 1f, bool loops = false)
+    public AudioSource Play2DSound(AudioClipName clipName, float volume = 1f, float pitch = 1f)
     {
-        AudioClip clip = GetClipInfo(clipName).Clip;
-        SingleShotAudio fx = CreateNewSoundSource();
+        AudioClipInfo info = GetClipInfo(clipName);
+        AudioSourceSettings settings = info.Settings;
 
-        fx.Play2DSound(clip, Mathf.Clamp01(volume * SoundFxVolume));
+        // Override settings
+        settings.volume *= volume;
+        settings.pitch = pitch;
+
+        SingleShotAudio fx = CreateNewSoundSource();
+        fx.Play2DSound(info.Clip, settings);
+
         return fx.Source;
     }
 
@@ -235,7 +241,6 @@ public class AudioManager : Singleton<AudioManager>
     {
         AudioClipInfo info = GetClipInfo(clipName);
         AudioClip clip = info.Clip;
-
         SingleShotAudio fx = CreateNewSoundSource();
 
         fx.PlaySoundAt(clip, position, info.Settings);
