@@ -1,3 +1,8 @@
+# INTENT
+A small collection of commonly re-used functionality when competing in a game jam
+
+# Example README file for your jam entry:
+
 [alt text][screenshot]
 
 # {GAME TITLE}
