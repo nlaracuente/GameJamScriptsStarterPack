@@ -1,13 +1,9 @@
-﻿
-namespace Assets.GameJamStarterPack.Scripts.Audio
+﻿/// <summary>
+/// Unique names to identify a specific audio clip
+/// </summary>
+public enum AudioClipName
 {
-    /// <summary>
-    /// Unique names to identify a specific audio clip
-    /// </summary>
-    public enum AudioClipName
-    {
-        Move,
-        Confirm,
-        Cancel,
-    }
+    Move,
+    Confirm,
+    Cancel,
 }
