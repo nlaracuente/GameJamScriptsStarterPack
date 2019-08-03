@@ -147,7 +147,9 @@ public class AudioManager : Singleton<AudioManager>
     public override void Awake()
     {
         base.Awake();
-        Configure();
+        if(this != null && Instance == this) {
+            Configure();
+        }
     }
 
     /// <summary>
